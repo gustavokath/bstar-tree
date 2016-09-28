@@ -12,14 +12,14 @@ class Datafile:
             for _ in range(0, self.filesize):
                 f.write(b'\0')
 
-    def get_datablock(self, dblock):
+    def get_datablock(self, address):
         with open('data/' + self.filename, 'rb') as f:
-            f.seek(dblock * 2)  # Round up to 2B
-            data = f.read(2)  # Read two bytes
-            print(data)
-            return Datablock.from_bytes(data)
+            raw_address = address * Datablock.DATABLOCK_SIZE  # Round up to 2KB
+            f.seek(raw_address)
+            data = f.read(Datablock.DATABLOCK_SIZE)  # Read 2KB
+            return Datablock.from_bytes(address, data)
 
     def write_datablock(self, dblock):
         with open('data/' + self.filename, 'wb+') as f:
-            f.seek(dblock.address * 2)
+            f.seek(dblock.address * Datablock.DATABLOCK_SIZE)
             f.write(dblock.data)
