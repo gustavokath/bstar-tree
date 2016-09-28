@@ -4,3 +4,9 @@ from datablock import Datablock
 @attr.s
 class Datafile:
     filename = attr.ib()
+    filesize = 32 * 1024 * 1024 * 8
+
+    def create_new(self):
+        with open('data/' + self.filename, 'wb') as f:
+            for _ in range(0, self.filesize):
+                f.write(b'0')
