@@ -1,2 +1,5 @@
+import attrs
+
+@attrs.s
 class BTree:
-    pass
+    maxnodes = attr.ib()
