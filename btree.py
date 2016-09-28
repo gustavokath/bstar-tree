@@ -1,5 +1,6 @@
-import attrs
+import attr
+from datafile import Datafile
 
-@attrs.s
+@attr.s
 class BTree:
     maxnodes = attr.ib()
