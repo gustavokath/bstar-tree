@@ -5,6 +5,7 @@ import attr
 class Datablock:
     data = attr.ib()
     address = attr.ib()
+    dirty = attr.ib(default=False)
     DATABLOCK_SIZE = 2 * 1024 * 8
 
     @classmethod
