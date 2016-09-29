@@ -7,9 +7,9 @@ class Datablock:
     address = attr.ib()
     DATABLOCK_SIZE = 2 * 1024 * 8
 
-    def from_bytes(address, data):
+    @classmethod
+    def from_bytes(cls, address, data):
         """
         Creates a new Datablock in memory from a string of bytes
-        TODO: Implementation
         """
-        return Datablock(data=data, address=address)
+        return cls(data=data, address=address)
