@@ -10,6 +10,12 @@ class Buffer:
     _last = attr.ib(default=0)
     _next = attr.ib(default=0)
 
+    def flush(self):
+        for i in range(0, self._last):
+            dblock = self._buff[i]
+            if dblock.dirty:
+                self.datafile.write_datablock(dblock)
+
     def get_datablock(self, address):
         # if it's in cache, return it
         for i in range(0, self._last):
