@@ -16,6 +16,11 @@ class Buffer:
             if dblock.dirty:
                 self.datafile.write_datablock(dblock)
 
+    def new_datablock(self, data=None):
+        dblock = self.datafile.new_datablock(data)
+        self._write_to_buffer(dblock)
+        return dblock
+
     def get_datablock(self, address):
         # if it's in cache, return it
         for i in range(0, self._last):

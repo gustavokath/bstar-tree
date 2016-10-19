@@ -22,4 +22,8 @@ class Datafile:
     def write_datablock(self, dblock):
         with open('data/' + self.filename, 'wb+') as f:
             f.seek(dblock.address * Datablock.DATABLOCK_SIZE)
-            f.write(dblock.data)
+            if dblock.deleted:
+                for _ in range(0, Datablock.DATABLOCK_SIZE):
+                    f.write(b'\0')
+            else:
+                f.write(dblock.data)
