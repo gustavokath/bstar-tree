@@ -6,6 +6,7 @@ from datablock import Datablock
 class Datafile:
     filename = attr.ib()
     filesize = 32 * 1024 * 1014
+    NUM_DATABLOCKS = filesize / Datablock.DATABLOCK_SIZE
 
     def create_new(self):
         with open('data/' + self.filename, 'wb') as f:
@@ -27,3 +28,14 @@ class Datafile:
                     f.write(b'\0')
             else:
                 f.write(dblock.data)
+
+    def next_available_datablock(self):
+        for dblock in self.datablocks:
+            if dblock.empty():
+                return dblock
+
+    def datablocks(self):
+        addr = 0
+        while addr < self.NUM_DATABLOCKS:
+            yield self.get_datablock(addr)
+            addr += 1

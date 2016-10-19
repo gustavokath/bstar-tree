@@ -17,6 +17,9 @@ class Datablock:
         self.deleted = True
         self._dirty = True
 
+    def empty(self):
+        return self.data == b'\0'
+
     @classmethod
     def from_bytes(cls, address, data):
         """
