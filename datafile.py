@@ -1,24 +1,37 @@
 import attr
+import struct
 from datablock import Datablock
+from table_datablock import TableDatablock
 
 
 @attr.s
 class Datafile:
     filename = attr.ib()
-    filesize = 32 * 1024 * 1014
+    filesize = 32 * 1024 * 1024
     NUM_DATABLOCKS = filesize / Datablock.DATABLOCK_SIZE
 
     def create_new(self):
-        with open('data/' + self.filename, 'wb') as f:
+        file_path = 'data/' + self.filename
+        #if not exists(file_path):
+        with open(file_path, 'wb') as f:
             for _ in range(0, self.filesize):
-                f.write(b'\0')
+                f.write(struct.pack('c', b'0'))
 
     def get_datablock(self, address):
         with open('data/' + self.filename, 'rb') as f:
             raw_address = address * Datablock.DATABLOCK_SIZE  # Round up to 2KB
             f.seek(raw_address)
             data = f.read(Datablock.DATABLOCK_SIZE)  # Read 2KB
-            return Datablock.from_bytes(address, data)
+            datablock_info = struct.unpack('cH%sx' % (Datablock.DATABLOCK_SIZE-4), data) # Get datablock type and number of records
+            datablock_type = int(datablock_info[0])
+            if datablock_type == 1:
+                return TableDatablock.from_bytes(address, data, datablock_info[1]) # Create Datablock
+            elif datablock_type == 2:
+                return Datablock.from_bytes(address, data, datablock_info[1]) # TODO: Create NodeDataBlock
+            elif datablock_type == 3:
+                return Datablock.from_bytes(address, data, datablock_info[1]) # TODO: Create LeafDataBlock
+            else:
+                return Datablock.from_bytes(address, data, datablock_info[1])
 
     def write_datablock(self, dblock):
         with open('data/' + self.filename, 'wb+') as f:

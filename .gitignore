@@ -88,5 +88,8 @@ ENV/
 # Rope project settings
 .ropeproject
 
+#PyCharm Project
+.idea/
+
 # test data
 data/*
