@@ -2,6 +2,8 @@ import attr
 import struct
 from datablock import Datablock
 from table_datablock import TableDatablock
+from knot_datablock import KnotDatablock
+from leaf_datablock import LeafDatablock
 
 
 @attr.s
@@ -15,21 +17,21 @@ class Datafile:
         #if not exists(file_path):
         with open(file_path, 'wb') as f:
             for _ in range(0, self.filesize):
-                f.write(struct.pack('c', b'0'))
+                f.write(b'\0')
 
     def get_datablock(self, address):
         with open('data/' + self.filename, 'rb') as f:
             raw_address = address * Datablock.DATABLOCK_SIZE  # Round up to 2KB
             f.seek(raw_address)
             data = f.read(Datablock.DATABLOCK_SIZE)  # Read 2KB
-            datablock_info = struct.unpack('cH%sx' % (Datablock.DATABLOCK_SIZE-4), data) # Get datablock type and number of records
-            datablock_type = int(datablock_info[0])
+            datablock_info = struct.unpack('BH%sx' % (Datablock.DATABLOCK_SIZE-4), data) # Get datablock type and number of records
+            datablock_type = datablock_info[0]
             if datablock_type == 1:
                 return TableDatablock.from_bytes(address, data, datablock_info[1]) # Create Datablock
             elif datablock_type == 2:
-                return Datablock.from_bytes(address, data, datablock_info[1]) # TODO: Create NodeDataBlock
+                return KnotDatablock.from_bytes(address, data, datablock_info[1]) # TODO: Create NodeDataBlock
             elif datablock_type == 3:
-                return Datablock.from_bytes(address, data, datablock_info[1]) # TODO: Create LeafDataBlock
+                return LeafDatablock.from_bytes(address, data, datablock_info[1]) # TODO: Create LeafDataBlock
             else:
                 return Datablock.from_bytes(address, data, datablock_info[1])
 
@@ -40,7 +42,7 @@ class Datafile:
                 for _ in range(0, Datablock.DATABLOCK_SIZE):
                     f.write(b'\0')
             else:
-                f.write(dblock.data)
+                f.write(dblock.get_data())
 
     def next_available_datablock(self):
         for dblock in self.datablocks:
