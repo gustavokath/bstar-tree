@@ -50,7 +50,10 @@ class Datafile:
                 return dblock
 
     def datablocks(self):
-        addr = 0
-        while addr < self.NUM_DATABLOCKS:
+        for addr in range(0, self.NUM_DATABLOCKS):
             yield self.get_datablock(addr)
-            addr += 1
+
+    def node_datablocks(self):
+        for dblock in self.datablocks
+            if type(dblock) is KnotDatablock:
+                yield dblock
