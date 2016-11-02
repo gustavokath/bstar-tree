@@ -1,6 +1,6 @@
 import attr
-from datafile import Datafile
+from buffer import Buffer
 
 @attr.s
 class BTree:
-    maxnodes = attr.ib()
+    root = attr.ib()
