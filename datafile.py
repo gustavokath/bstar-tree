@@ -2,7 +2,7 @@ import attr
 import struct
 from datablock import Datablock
 from table_datablock import TableDatablock
-from knot_datablock import KnotDatablock
+from node_datablock import NodeDatablock
 from leaf_datablock import LeafDatablock
 
 
@@ -29,7 +29,7 @@ class Datafile:
             if datablock_type == 1:
                 return TableDatablock.from_bytes(address, data, datablock_info[1]) # Create Datablock
             elif datablock_type == 2:
-                return KnotDatablock.from_bytes(address, data, datablock_info[1]) # TODO: Create NodeDataBlock
+                return NodeDatablock.from_bytes(address, data, datablock_info[1]) # TODO: Create NodeDataBlock
             elif datablock_type == 3:
                 return LeafDatablock.from_bytes(address, data, datablock_info[1]) # TODO: Create LeafDataBlock
             else:
@@ -55,5 +55,5 @@ class Datafile:
 
     def node_datablocks(self):
         for dblock in self.datablocks
-            if type(dblock) is KnotDatablock:
+            if type(dblock) is NodeDatablock:
                 yield dblock
