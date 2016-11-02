@@ -1,9 +1,8 @@
 import attr
 from buffer import Buffer
+from node_datablock import NodeDatablock
 
 
 @attr.s
 class BNode:
-    tree = attr.ib()
-    contents = attr.ib(default=attr.Factory(list))
-    children = attr.ib(default=attr.Factory(list))
+    datablock = attr.ib(validator=attr.validators.instance_of(NodeDatablock))
