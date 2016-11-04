@@ -1,6 +1,7 @@
 import attr
 import struct
 from datablock import Datablock
+from record import Record
 
 
 @attr.s
@@ -14,6 +15,22 @@ class TableDatablock(Datablock):
         """
         fmt = 'BH%sH%ss' % (len(self.header), len(self.records))
         return struct.pack(fmt, self.type, self.count_record, *self.header, self.records)
+
+    def get_records(self):
+        """
+        Returns a list of Records included in the datablock
+        """
+        # TODO
+        return []
+
+    def save_record(self, record):
+        """
+        Saves a Record to the datablock
+        """
+        if type(record) is not Record:
+            raise TypeError("Wrong type for save_record()")
+        # TODO: check if there's room in the Datablock
+        # TODO: save to the Datablock
 
     @classmethod
     def from_bytes(cls, address, data, count_record):
