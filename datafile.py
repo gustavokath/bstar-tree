@@ -54,6 +54,6 @@ class Datafile:
             yield self.get_datablock(addr)
 
     def node_datablocks(self):
-        for dblock in self.datablocks
+        for dblock in self.datablocks:
             if type(dblock) is NodeDatablock:
                 yield dblock

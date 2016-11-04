@@ -5,8 +5,8 @@ BUFFER_SIZE = 256
 
 @attr.s
 class Buffer:
-    _buff = attr.ib(default=attr.Factory(list))
     datafile = attr.ib()
+    _buff = attr.ib(default=[])
     _last = attr.ib(default=0)
     _next = attr.ib(default=0)
 

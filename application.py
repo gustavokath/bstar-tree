@@ -8,7 +8,7 @@ from leaf_datablock import LeafDatablock
 
 if __name__ == "__main__":
     datafile = Datafile(filename="test")
-    #datafile.create_new()
+    # datafile.create_new()
     print(datafile.get_datablock(100))
 
     table_data = struct.pack('BHHHHH2036s', 1, 2,0,1,1,2, b'B')
