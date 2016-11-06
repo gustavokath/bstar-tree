@@ -1,4 +1,5 @@
 import attr
+import struct
 from rowid import Rowid
 
 def len_less_than_200(instance, attribute, value):
@@ -14,3 +15,6 @@ class Record:
     description = attr.ib(validator=len_less_than_200)
     # WARNING: must call attr.validate(description) on EVERY update
     rowid = attr.ib(validator=attr.validators.instance_of(Rowid))
+
+    def pack(self):
+        return struct.pack('I%ss' % len(self.description), self.code, self.description.encode())

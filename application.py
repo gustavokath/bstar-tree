@@ -9,11 +9,12 @@ from leaf_datablock import LeafDatablock
 if __name__ == "__main__":
     datafile = Datafile(filename="test")
     # datafile.create_new()
-    print(datafile.get_datablock(100))
+    #print(datafile.get_datablock(100))
 
-    table_data = struct.pack('BHHHHH2036s', 1, 2,0,1,1,2, b'B')
+    table_data = struct.pack('BHHHHHI8sI2020s', 1, 2,0,12,12,9,1,b'Paolinha',2,b'Teste')
     dblock = TableDatablock.from_bytes(4, table_data, 2)
     datafile.write_datablock(dblock)
+    print(datafile.get_datablock(dblock.address))
 
 
     node_data = struct.pack('BHHHIIH2030s', 2, 2,0,1,1,2,2,b'A')

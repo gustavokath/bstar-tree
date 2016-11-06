@@ -6,8 +6,8 @@ class Rowid:
     """
     Rowid points to a record in a datablock
     """
-    dblock = attr.ib()
-    pos = attr.ib(validator=attr.validators.instance_of(int))
+    dblock = attr.ib() #endereco datablock ?
+    pos = attr.ib(validator=attr.validators.instance_of(int)) #end registro ?
 
     def get_record(self):
         """
