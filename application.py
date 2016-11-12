@@ -8,11 +8,12 @@ from leaf_datablock import LeafDatablock
 
 if __name__ == "__main__":
     datafile = Datafile(filename="test")
-    # datafile.create_new()
+    #datafile.create_new()
     #print(datafile.get_datablock(100))
 
-    table_data = struct.pack('BHHHHHI8sI2020s', 1, 2,0,12,12,9,1,b'Paolinha',2,b'Teste')
-    dblock = TableDatablock.from_bytes(4, table_data, 2)
+    #print(struct.calcsize('BHHHHHHHI8sI16sI1996s'))
+    table_data = struct.pack('BHHHHHHHI8sI16sI1996s',1,2,0,12,12,8,32,9,1,b'Paolinha',2,b'Test',3,b'longe')
+    dblock = TableDatablock.from_bytes(0, table_data, 3)
     datafile.write_datablock(dblock)
     print(datafile.get_datablock(dblock.address))
 

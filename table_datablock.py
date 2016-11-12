@@ -1,5 +1,6 @@
 import attr
 import struct
+import math
 from datablock import Datablock
 from record import Record
 from rowid import Rowid
@@ -14,10 +15,12 @@ class TableDatablock(Datablock):
         """
         Convert header and records to bytes
         """
-        b = bytes()
-        pack_records = b.join([record.pack() for record in self.records])
-        fmt = 'BH%sH%ss' % (len(self.header), self.records_size())
-        return struct.pack(fmt, self.type, self.count_record, *self.header, pack_records)
+        records_buffer = bytearray(self.records_size())
+        for i in range(0,len(self.records)):
+            struct.pack_into('%ss' % self.header[2*i+1], records_buffer, self.header[2*i], self.records[i].pack())
+        fmt = 'BH%sH%ss' % (len(self.header), len(records_buffer))
+        data = struct.pack(fmt, self.type, self.count_record, *self.header, records_buffer)
+        return data
 
     def save_record(self, record):
         """
@@ -43,7 +46,7 @@ class TableDatablock(Datablock):
             header.append(header_info[i+2])  #Get record begin position
             header.append(header_info[i + 2 + 1])  #Get record length
 
-        records = TableDatablock.unpack_records(record_info[0], header, address) 
+        records = TableDatablock.unpack_records(record_info[0], header, address)
 
         return cls(address=address, count_record=count_record, type=1,
                    header=header, records=records)
@@ -51,7 +54,6 @@ class TableDatablock(Datablock):
     @staticmethod
     def unpack(count_record, data):
         records_size = TableDatablock.DATABLOCK_SIZE - ((count_record * 4) + 4)  # Calculate the remaining space in the record data area
-        print(records_size)
 
         fmt_header = 'BH%sH%sx' % (count_record * 2, records_size)
         fmt_record = '%ss' % records_size
@@ -65,10 +67,10 @@ class TableDatablock(Datablock):
         """
         Returns a list of Records included in the datablock
         """
+
         records = []
         for i in range(0, len(header), 2):
             info = struct.unpack_from('I%ss' % (header[i+1]-4), record_str, header[i])
-            rowid = Rowid(dblock=address, pos=i)
+            rowid = Rowid(dblock=address, pos=int(math.ceil(i/2.0)))
             records.append(Record(code=info[0], description=info[1].decode(), rowid=rowid))
         return records
-

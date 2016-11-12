@@ -17,4 +17,11 @@ class Record:
     rowid = attr.ib(validator=attr.validators.instance_of(Rowid))
 
     def pack(self):
-        return struct.pack('I%ss' % len(self.description), self.code, self.description.encode())
+        return struct.pack('I%ss' % self.writeble_size(self.description), self.code, self.description.encode())
+
+    def writeble_size(self, str_obj):
+        size = len(str_obj)
+        for i in range(0,4):
+            if((size+i) % 4 == 0):
+                return size+i
+        return size
