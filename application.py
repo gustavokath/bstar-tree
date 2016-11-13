@@ -10,6 +10,7 @@ import sys
 import random
 import uuid
 
+
 def parse_input(cmd, table):
     cmd = cmd.split('(')
     cmd[1] = cmd[1][:-1]
@@ -50,6 +51,7 @@ def parse_insert(values, table):
         print('Invalid insert command')
         print('Expected 1 or 2 values, %s received' % len(values))
         return False
+
 
 def parse_select(values, table):
     try:
@@ -101,7 +103,6 @@ if __name__ == "__main__":
             table.exit()
         else:
             parse_input(cmd, table)
-
 
 
 
