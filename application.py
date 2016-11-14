@@ -4,32 +4,35 @@ from datafile import Datafile
 from table_datablock import TableDatablock
 from node_datablock import NodeDatablock
 from leaf_datablock import LeafDatablock
+from table import Table
 import traceback
 import sys
 import random
 import uuid
 
-def parse_input(cmd):
+def parse_input(cmd, table):
     cmd = cmd.split('(')
+    print(cmd)
     cmd[1] = cmd[1][:-1]
     if(cmd[0] == 'insert'):
-        return parse_input(cmd[1])
+        return parse_insert(cmd[1], table)
     elif(cmd[0] == 'select'):
-        return parse_select(cmd[1])
+        return parse_select(cmd[1], table)
     elif(cmd[0] == 'update'):
-        return parse_update(cmd[1])
+        return parse_update(cmd[1], table)
     elif(cmd[0] == 'delete'):
-        return parse_delete(cmd[1])
+        return parse_delete(cmd[1], table)
 
-def parse_insert(values):
+def parse_insert(values, table):
     values = values.split(',')
     if(len(values) == 1):
         try:
             count = int(values[0])
-            print(count)
             for i in range(0, count):
                 code = random.randint(0, 9999999999)
-                desc = uuid.uuid1()
+                desc = str(uuid.uuid1())
+                print('Starting Insert')
+                table.insert(code, desc)
             return True
         except ValueError:
             print('Error: Expected parameter \"%s\" to be an integer' % values[0])
@@ -37,7 +40,9 @@ def parse_insert(values):
     elif(len(values) == 2):
         try:
             code = int(values[0])
-            desc = values[1]
+            desc = values[1].strip()
+            print('Starting Insert')
+            table.insert(code, desc)
             return True
         except ValueError:
             print('Error: Expected parameter \"%s\" to be an integer' % values[0])
@@ -47,13 +52,13 @@ def parse_insert(values):
         print('Expected 1 or 2 values, %s received' % len(values))
         return False
 
-def parse_select(values):
+def parse_select(values, table):
     try:
         code = int(values)
     except ValueError:
         desc = values
 
-def parse_update(values):
+def parse_update(values, table):
     values = values.split(',')
     if(len(values) != 2):
         print('Expected 2 parameters, %s received' % len(values))
@@ -61,13 +66,13 @@ def parse_update(values):
 
     try:
         code = int(values[0])
-        desc = values[1]
+        desc = values[1].strip()
         return True
     except ValueError:
         print('Error: Expected code \"%s\" to be an integer' % values[0])
         return False
 
-def parse_delete(value):
+def parse_delete(value, table):
     try:
         code = int(value)
         return True
@@ -77,10 +82,12 @@ def parse_delete(value):
 
 if __name__ == "__main__":
     datafile = Datafile(filename="test")
+    table = Table.init(datafile)
     #datafile.create_new()
 
     print('SGBD started')
     finish = False
+    print(table)
     while(not finish):
         cmd = input('$ ')
 
@@ -88,7 +95,7 @@ if __name__ == "__main__":
             finish = True
             print('Closing SGBD...')
         else:
-            parse_input(cmd)
+            parse_input(cmd, table)
 
 
 

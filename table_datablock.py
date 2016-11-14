@@ -34,11 +34,51 @@ class TableDatablock(Datablock):
     def records_size(self):
         return TableDatablock.DATABLOCK_SIZE - ((len(self.header) * 2))
 
+
+    def free_contiguous_space(self, space_needed):
+        if(len(self.header) == 0):
+            return 0
+
+        for i in range(0, len(self.header), 2):
+            if(i+2 > len(self.header)):
+                #Check for space in the end of the records area
+                if(self.records_size() -(self.header[i]+self.header[i+1]) >= space_needed):
+                    return self.header[i]+self.header[i+1]
+
+            #Check for space between records
+            space_between = self.header[i+2]-(self.header[i]+self.header[i+1])
+            if(space_needed <= space_between):
+                return self.header[i]+self.header[i+1]
+        return -1
+
+    def write_data(self, record, position=None):
+        if(position is None):
+            position = self.free_contiguous_space(record.size()+4)
+            if(position == -1):
+                print('Error writing data')
+                return False
+        # Insert Header in the right position
+        place = 0
+        for i in range(0, len(self.header), 2):
+            if(self.header[i] > position):
+                place = i
+                self.header.insert(i, position)
+                self.header.insert(i+1, record.size())
+        if(record.rowid is None):
+            record.rowid = Rowid(dblock=self.address, pos=int(math.ceil(place/2.0)))
+        self.records.insert(place, record)
+        self._dirty = True
+        return True
+
     @classmethod
-    def from_bytes(cls, address, data, count_record):
+    def from_bytes(cls, address, data=None, count_record=0):
         """
         Creates a new TableDatablock in memory from a string of bytes
         """
+        if(count_record == 0 and data is None):
+            return cls(address=address, count_record=count_record, type=1,
+                       header=[], records=[])
+
         header = []
         header_info, record_info = TableDatablock.unpack(count_record, data)
 

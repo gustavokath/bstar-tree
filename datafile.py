@@ -33,7 +33,7 @@ class Datafile:
             elif datablock_type == 3:
                 return LeafDatablock.from_bytes(address, data, datablock_info[1]) # TODO: Create LeafDataBlock
             else:
-                return Datablock.from_bytes(address, data, datablock_info[1])
+                return False
 
     def write_datablock(self, dblock):
         with open('data/' + self.filename, 'wb+') as f:
@@ -57,3 +57,13 @@ class Datafile:
         for dblock in self.datablocks:
             if type(dblock) is NodeDatablock:
                 yield dblock
+
+    def new_datablock(self, datablock_type, address):
+        if datablock_type == 1:
+            return TableDatablock.from_bytes(address) # Create Datablock
+        elif datablock_type == 2:
+            return NodeDatablock.from_bytes(address) # TODO: Create NodeDataBlock
+        elif datablock_type == 3:
+            return LeafDatablock.from_bytes(address) # TODO: Create LeafDataBlock
+        else:
+            return Datablock.from_bytes(address)
