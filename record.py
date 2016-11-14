@@ -14,7 +14,7 @@ class Record:
     code = attr.ib(validator=attr.validators.instance_of(int))
     description = attr.ib(validator=len_less_than_200)
     # WARNING: must call attr.validate(description) on EVERY update
-    rowid = attr.ib(validator=attr.validators.instance_of(Rowid))
+    rowid = attr.ib(default=None)
 
     def pack(self):
         return struct.pack('I%ss' % self.writeble_size(self.description), self.code, self.description.encode())
@@ -24,4 +24,7 @@ class Record:
         for i in range(0,4):
             if((size+i) % 4 == 0):
                 return size+i
-        return size
+        return int(size)
+
+    def size(self):
+        return self.writeble_size(self.description) + 4
