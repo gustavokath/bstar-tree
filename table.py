@@ -68,7 +68,6 @@ class Table:
         dblock, position = self.buffer.search_dblock_with_free_space(update_record.size()+4, 1)
         dblock.write_data(update_record, position)
         print('Record Updated')
-
         pass
 
     def delete(self, code):

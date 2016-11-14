@@ -10,7 +10,6 @@ import sys
 import random
 import uuid
 
-
 def parse_input(cmd, table):
     cmd = cmd.split('(')
     cmd[1] = cmd[1][:-1]
@@ -103,8 +102,6 @@ if __name__ == "__main__":
             table.exit()
         else:
             parse_input(cmd, table)
-
-
 
 
     #print(datafile.get_datablock(100))
