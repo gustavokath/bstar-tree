@@ -1,6 +1,8 @@
 import attr
 import struct
 import math
+import re
+import copy
 from datablock import Datablock
 from record import Record
 from rowid import Rowid
@@ -40,7 +42,11 @@ class TableDatablock(Datablock):
             return 0
 
         for i in range(0, len(self.header), 2):
+<<<<<<< HEAD
+            if(i+2 >= len(self.header)):
+=======
             if(i+2 > len(self.header)):
+>>>>>>> master
                 #Check for space in the end of the records area
                 if(self.records_size() -(self.header[i]+self.header[i+1]) >= space_needed):
                     return self.header[i]+self.header[i+1]
@@ -58,18 +64,77 @@ class TableDatablock(Datablock):
                 print('Error writing data')
                 return False
         # Insert Header in the right position
+<<<<<<< HEAD
+        place = -1
+        for i  in range(0, len(self.header), 2):
+=======
         place = 0
         for i in range(0, len(self.header), 2):
+>>>>>>> master
             if(self.header[i] > position):
                 place = i
                 self.header.insert(i, position)
                 self.header.insert(i+1, record.size())
+<<<<<<< HEAD
+        if(place == -1):
+            place = len(self.header)
+            self.header.append(position)
+            self.header.append(record.size())
+
+=======
+>>>>>>> master
         if(record.rowid is None):
             record.rowid = Rowid(dblock=self.address, pos=int(math.ceil(place/2.0)))
         self.records.insert(place, record)
         self._dirty = True
+<<<<<<< HEAD
+        self.count_record = len(self.records)
         return True
 
+    def update_record(self, record, desc):
+        tmp_record = copy.copy(record)
+        tmp_record.description = desc
+        pos = record.rowid.pos*2
+        can_store = False
+        if(pos+2 >= len(self.header)):
+            can_store =((self.header[pos+1] + (self.records_size() - (self.header[pos]+self.header[pos+1]))) >= tmp_record.size())
+        else:
+            can_store = ((self.header[pos+1]+(self.header[pos+2]-self.header[pos+1])) >= tmp_record.size())
+        #Check for space between records
+        if(can_store):
+            record.description = desc
+            self.header[pos+1] = record.size()
+            self._dirty = True
+            print(self)
+            return True
+        else:
+            self.delete_record(record)
+            return None
+
+    def delete_record(self, record):
+        pos = record.rowid.pos
+        self.header.pop(pos*2)
+        self.header.pop(pos*2)
+        self.records.pop(pos)
+        self._dirty = True
+        return True
+
+    def search_by(self, value, field):
+        found_records = []
+        for record in self.records:
+            if(field == 'code'):
+                if(record.code == value):
+                    return [record]
+            elif(field == 'description'):
+                if(record.description == value):
+                    found_records.append(record)
+        return found_records
+
+
+=======
+        return True
+
+>>>>>>> master
     @classmethod
     def from_bytes(cls, address, data=None, count_record=0):
         """
@@ -112,5 +177,6 @@ class TableDatablock(Datablock):
         for i in range(0, len(header), 2):
             info = struct.unpack_from('I%ss' % (header[i+1]-4), record_str, header[i])
             rowid = Rowid(dblock=address, pos=int(math.ceil(i/2.0)))
-            records.append(Record(code=info[0], description=info[1].decode(), rowid=rowid))
+            desc = re.sub(r'[^\w]', '', info[1].decode())
+            records.append(Record(code=info[0], description=desc, rowid=rowid))
         return records

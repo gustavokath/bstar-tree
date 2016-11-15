@@ -20,7 +20,7 @@ class Buffer:
     def flush(self):
         for i in range(0, self._last):
             dblock = self._buff[i]
-            if dblock.dirty:
+            if dblock._dirty:
                 self.datafile.write_datablock(dblock)
 
     def new_datablock(self, datablock_type, address):
@@ -62,6 +62,30 @@ class Buffer:
             if(space != -1):
                 return dblock, space
 
+<<<<<<< HEAD
+    def linear_search_record(self, datablock_type, value, field=None, unique=False):
+        """
+        Search datablocks to contain a spacific value
+        """
+        #First check dablocks in buffer
+        found_records = []
+        for i in range(0, int(self.datafile.NUM_DATABLOCKS)):
+            try:
+                dblock = self.get_datablock(i)
+            except:
+                continue
+            if(dblock.type == datablock_type):
+                records = dblock.search_by(value, field)
+                if(records is not None):
+                    if(unique):
+                        return records
+                    else:
+                        if(isinstance(records, list)):
+                            found_records = found_records + records
+
+        return found_records
+=======
+>>>>>>> master
 
     def get_datablock_free_space(self, dblock, free_space, datablock_type):
         if(dblock.type == datablock_type):
