@@ -70,6 +70,14 @@ class Table:
         Deletes record by code
         Finds record through select_code()
         """
+        records = self.buffer.linear_search_record(1, code, 'code', True)
+        if(records is None):
+            print('Record not found')
+            return None
+        record = records[0]
+        dblock = self.buffer.get_datablock(record.rowid.dblock)
+        dblock.delete_record(record)
+        print('Record Removed')
         pass
 
     def exit(self):

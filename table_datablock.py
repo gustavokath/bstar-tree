@@ -95,13 +95,16 @@ class TableDatablock(Datablock):
             print(self)
             return True
         else:
-            self.header.pop(pos)
-            self.header.pop(pos)
-            self.records.pop(record.rowid.pos)
-            self._dirty = True
+            self.delete_record(record)
             return None
 
-
+    def delete_record(self, record):
+        pos = record.rowid.pos
+        self.header.pop(pos*2)
+        self.header.pop(pos*2)
+        self.records.pop(pos)
+        self._dirty = True
+        return True
 
     def search_by(self, value, field):
         found_records = []

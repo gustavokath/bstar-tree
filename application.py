@@ -77,6 +77,7 @@ def parse_update(values, table):
 def parse_delete(value, table):
     try:
         code = int(value)
+        table.delete(code)
         return True
     except ValueError:
         print('Error: Expected code \"%s\" to be an integer' % values[0])
