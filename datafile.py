@@ -15,7 +15,7 @@ class Datafile:
     def create_new(self):
         file_path = 'data/' + self.filename
         #if not exists(file_path):
-        with open(file_path, 'wb') as f:
+        with open(file_path, 'wb+') as f:
             for _ in range(0, self.filesize):
                 f.write(b'\0')
 
@@ -36,7 +36,7 @@ class Datafile:
                 return False
 
     def write_datablock(self, dblock):
-        with open('data/' + self.filename, 'wb+') as f:
+        with open('data/' + self.filename, 'rb+') as f:
             f.seek(dblock.address * Datablock.DATABLOCK_SIZE)
             if dblock.deleted:
                 for _ in range(0, Datablock.DATABLOCK_SIZE):

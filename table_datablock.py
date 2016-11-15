@@ -1,6 +1,7 @@
 import attr
 import struct
 import math
+import re
 from datablock import Datablock
 from record import Record
 from rowid import Rowid
@@ -19,7 +20,7 @@ class TableDatablock(Datablock):
         for i in range(0,len(self.records)):
             struct.pack_into('%ss' % self.header[2*i+1], records_buffer, self.header[2*i], self.records[i].pack())
         fmt = 'BH%sH%ss' % (len(self.header), len(records_buffer))
-        data = struct.pack(fmt, self.type, self.count_record, *self.header, records_buffer)
+        data = struct.pack(fmt, self.type, len(self.records), *self.header, records_buffer)
         return data
 
     def save_record(self, record):
@@ -40,7 +41,7 @@ class TableDatablock(Datablock):
             return 0
 
         for i in range(0, len(self.header), 2):
-            if(i+2 > len(self.header)):
+            if(i+2 >= len(self.header)):
                 #Check for space in the end of the records area
                 if(self.records_size() -(self.header[i]+self.header[i+1]) >= space_needed):
                     return self.header[i]+self.header[i+1]
@@ -58,17 +59,34 @@ class TableDatablock(Datablock):
                 print('Error writing data')
                 return False
         # Insert Header in the right position
-        place = 0
-        for i in range(0, len(self.header), 2):
+        place = -1
+        for i  in range(0, len(self.header), 2):
             if(self.header[i] > position):
                 place = i
                 self.header.insert(i, position)
                 self.header.insert(i+1, record.size())
+        if(place == -1):
+            place = len(self.header)
+            self.header.append(position)
+            self.header.append(record.size())
+
         if(record.rowid is None):
             record.rowid = Rowid(dblock=self.address, pos=int(math.ceil(place/2.0)))
         self.records.insert(place, record)
         self._dirty = True
         return True
+
+    def search_by(self, value, field):
+        found_records = []
+        for record in self.records:
+            if(field == 'code'):
+                if(record.code == value):
+                    return [record]
+            elif(field == 'description'):
+                if(record.description == value):
+                    found_records.append(record)
+        return found_records
+
 
     @classmethod
     def from_bytes(cls, address, data=None, count_record=0):
@@ -112,5 +130,6 @@ class TableDatablock(Datablock):
         for i in range(0, len(header), 2):
             info = struct.unpack_from('I%ss' % (header[i+1]-4), record_str, header[i])
             rowid = Rowid(dblock=address, pos=int(math.ceil(i/2.0)))
-            records.append(Record(code=info[0], description=info[1].decode(), rowid=rowid))
+            desc = re.sub(r'[^\w]', '', info[1].decode())
+            records.append(Record(code=info[0], description=desc, rowid=rowid))
         return records

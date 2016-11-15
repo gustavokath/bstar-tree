@@ -12,7 +12,6 @@ import uuid
 
 def parse_input(cmd, table):
     cmd = cmd.split('(')
-    print(cmd)
     cmd[1] = cmd[1][:-1]
     if(cmd[0] == 'insert'):
         return parse_insert(cmd[1], table)
@@ -29,10 +28,10 @@ def parse_insert(values, table):
         try:
             count = int(values[0])
             for i in range(0, count):
-                code = random.randint(0, 9999999999)
+                code = random.randint(0, 4294967295)
                 desc = str(uuid.uuid1())
-                print('Starting Insert')
                 table.insert(code, desc)
+                print('Record Inserted')
             return True
         except ValueError:
             print('Error: Expected parameter \"%s\" to be an integer' % values[0])
@@ -41,8 +40,8 @@ def parse_insert(values, table):
         try:
             code = int(values[0])
             desc = values[1].strip()
-            print('Starting Insert')
             table.insert(code, desc)
+            print('Record Inserted')
             return True
         except ValueError:
             print('Error: Expected parameter \"%s\" to be an integer' % values[0])
@@ -55,8 +54,10 @@ def parse_insert(values, table):
 def parse_select(values, table):
     try:
         code = int(values)
+        table.select_code(code)
     except ValueError:
         desc = values
+        table.select_desc(desc)
 
 def parse_update(values, table):
     values = values.split(',')
@@ -82,6 +83,7 @@ def parse_delete(value, table):
 
 if __name__ == "__main__":
     datafile = Datafile(filename="test")
+
     table = Table.init(datafile)
     #datafile.create_new()
 
@@ -94,6 +96,7 @@ if __name__ == "__main__":
         if(cmd == 'exit'):
             finish = True
             print('Closing SGBD...')
+            table.exit()
         else:
             parse_input(cmd, table)
 

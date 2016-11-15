@@ -20,17 +20,14 @@ class Table:
         dblock.write_data(new_record, position)
         pass
 
-    def insert_random(self, n):
-        """
-        Inserts n random records into table
-        """
-        pass
-
     def select_code(self, code):
         """
         Finds record with code
         Uses btree for index
         """
+        #Without btree
+        records = self.buffer.linear_search_record(1, code, 'code', True)
+        print(records)
         pass
 
     def select_desc(self, desc):
@@ -38,6 +35,8 @@ class Table:
         Finds record by description
         Can't use btree
         """
+        records = self.buffer.linear_search_record(1, desc, 'description')
+        print(records)
         pass
 
     def update(self, code, desc):
@@ -53,3 +52,6 @@ class Table:
         Finds record through select_code()
         """
         pass
+
+    def exit(self):
+        self.buffer.flush()
