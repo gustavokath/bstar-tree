@@ -2,6 +2,7 @@ import attr
 import struct
 import math
 import re
+import copy
 from datablock import Datablock
 from record import Record
 from rowid import Rowid
@@ -20,7 +21,7 @@ class TableDatablock(Datablock):
         for i in range(0,len(self.records)):
             struct.pack_into('%ss' % self.header[2*i+1], records_buffer, self.header[2*i], self.records[i].pack())
         fmt = 'BH%sH%ss' % (len(self.header), len(records_buffer))
-        data = struct.pack(fmt, self.type, len(self.records), *self.header, records_buffer)
+        data = struct.pack(fmt, self.type, self.count_record, *self.header, records_buffer)
         return data
 
     def save_record(self, record):
@@ -74,7 +75,33 @@ class TableDatablock(Datablock):
             record.rowid = Rowid(dblock=self.address, pos=int(math.ceil(place/2.0)))
         self.records.insert(place, record)
         self._dirty = True
+        self.count_record = len(self.records)
         return True
+
+    def update_record(self, record, desc):
+        tmp_record = copy.copy(record)
+        tmp_record.description = desc
+        pos = record.rowid.pos*2
+        can_store = False
+        if(pos+2 >= len(self.header)):
+            can_store =((self.header[pos+1] + (self.records_size() - (self.header[pos]+self.header[pos+1]))) >= tmp_record.size())
+        else:
+            can_store = ((self.header[pos+1]+(self.header[pos+2]-self.header[pos+1])) >= tmp_record.size())
+        #Check for space between records
+        if(can_store):
+            record.description = desc
+            self.header[pos+1] = record.size()
+            self._dirty = True
+            print(self)
+            return True
+        else:
+            self.header.pop(pos)
+            self.header.pop(pos)
+            self.records.pop(record.rowid.pos)
+            self._dirty = True
+            return None
+
+
 
     def search_by(self, value, field):
         found_records = []

@@ -68,6 +68,7 @@ def parse_update(values, table):
     try:
         code = int(values[0])
         desc = values[1].strip()
+        table.update(code, desc)
         return True
     except ValueError:
         print('Error: Expected code \"%s\" to be an integer' % values[0])
