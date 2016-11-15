@@ -20,6 +20,12 @@ class Table:
         dblock.write_data(new_record, position)
         pass
 
+    def insert_random(self, n):
+        """
+        Inserts n random records into table
+        """
+        pass
+
     def select_code(self, code):
         """
         Finds record with code
@@ -82,3 +88,4 @@ class Table:
 
     def exit(self):
         self.buffer.flush()
+        pass

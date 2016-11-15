@@ -62,6 +62,7 @@ class Buffer:
             if(space != -1):
                 return dblock, space
 
+<<<<<<< HEAD
     def linear_search_record(self, datablock_type, value, field=None, unique=False):
         """
         Search datablocks to contain a spacific value
@@ -83,6 +84,8 @@ class Buffer:
                             found_records = found_records + records
 
         return found_records
+=======
+>>>>>>> master
 
     def get_datablock_free_space(self, dblock, free_space, datablock_type):
         if(dblock.type == datablock_type):
