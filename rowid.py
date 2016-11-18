@@ -14,3 +14,6 @@ class Rowid:
         Returns a Record from the Rowid
         """
         return self.dblock.get_records()[self.pos]
+
+    def pack(self):
+        return struct.pack('HH', self.dblock, self.pos)
