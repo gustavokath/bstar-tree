@@ -1,29 +1,42 @@
 import attr
 from buffer import Buffer
 from record import Record
+from btree import BTree
 
 
 @attr.s
 class Table:
+    BTREE_ROOT_DEFAULT = 16300
     buffer = attr.ib(validator=attr.validators.instance_of(Buffer))
+    btree = attr.ib(default=None)
 
     @classmethod
     def init(cls, datafile):
-        return cls(buffer=Buffer.init(datafile))
+        buffer = Buffer.init(datafile)
+        try:
+            dblock = buffer.get_datablock(self.BTREE_ROOT_DEFAULT)
+            btree_root = BTree(root=self.BTREE_ROOT_DEFAULT, buffer=self.buffer)
+        except:
+            btree_root = None
+        return cls(buffer=buffer, btree=btree_root)
 
     def insert(self, code, desc):
         """
         Inserts code and desc into table
         """
+        if(self.btree is None):
+            self.btree = BTree(root=self.BTREE_ROOT_DEFAULT, buffer=self.buffer)
+            self.btree.init()
+
         new_record = Record(code=code, description=desc)
+        #Search if code already exists
+        if(self.btree.has_key(code)):
+            print('Record with code %s already exists' % code)
+            return None
+
         dblock, position = self.buffer.search_dblock_with_free_space(new_record.size()+4, 1)
         dblock.write_data(new_record, position)
-        pass
-
-    def insert_random(self, n):
-        """
-        Inserts n random records into table
-        """
+        print('Record Inserted')
         pass
 
     def select_code(self, code):

@@ -31,7 +31,6 @@ def parse_insert(values, table):
                 code = random.randint(0, 4294967295)
                 desc = str(uuid.uuid1())
                 table.insert(code, desc)
-                print('Record Inserted')
             return True
         except ValueError:
             print('Error: Expected parameter \"%s\" to be an integer' % values[0])
@@ -41,7 +40,6 @@ def parse_insert(values, table):
             code = int(values[0])
             desc = values[1].strip()
             table.insert(code, desc)
-            print('Record Inserted')
             return True
         except ValueError:
             print('Error: Expected parameter \"%s\" to be an integer' % values[0])
@@ -86,7 +84,6 @@ def parse_delete(value, table):
 
 if __name__ == "__main__":
     datafile = Datafile(filename="test")
-
     table = Table.init(datafile)
     #datafile.create_new()
 
@@ -111,12 +108,6 @@ if __name__ == "__main__":
     #dblock = TableDatablock.from_bytes(0, table_data, 3)
     #datafile.write_datablock(dblock)
     #print(datafile.get_datablock(dblock.address))
-
-
-    #node_data = struct.pack('BHHHIIH2030s', 2, 2,0,1,1,2,2,b'A')
-    #node_dblock = NodeDatablock.from_bytes(100, node_data, 2)
-    #datafile.write_datablock(node_dblock)
-    #print(datafile.get_datablock(100))
 
     #leaf_data = struct.pack('BHHHHHII%ss' % 2028, 3, 2, 0, 1, 2, 3, 4, 5, b'\x00')
     #leaf_dblock = LeafDatablock.from_bytes(200, leaf_data, 2)
