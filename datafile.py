@@ -4,6 +4,7 @@ from datablock import Datablock
 from table_datablock import TableDatablock
 from node_datablock import NodeDatablock
 from leaf_datablock import LeafDatablock
+from config_datablock import ConfigDatablock
 
 
 @attr.s
@@ -32,26 +33,29 @@ class Datafile:
                 return NodeDatablock.from_bytes(address, data, datablock_info[1]) # TODO: Create NodeDataBlock
             elif datablock_type == 3:
                 return LeafDatablock.from_bytes(address, data, datablock_info[1]) # TODO: Create LeafDataBlock
+            elif datablock_type == 4:
+                return ConfigDatablock.from_bytes(address, data, datablock_info[1]) # TODO: Create LeafDataBlock
             else:
                 return False
 
     def write_datablock(self, dblock):
         with open('data/' + self.filename, 'rb+') as f:
-            f.seek(dblock.address * Datablock.DATABLOCK_SIZE)
+            f.seek(int(dblock.address) * int(Datablock.DATABLOCK_SIZE))
             if dblock.deleted:
-                for _ in range(0, Datablock.DATABLOCK_SIZE):
+                for _ in range(0, int(Datablock.DATABLOCK_SIZE)):
                     f.write(b'\0')
             else:
                 f.write(dblock.get_data())
 
-    def next_available_datablock(self):
-        for dblock in self.datablocks:
-            if dblock.empty():
-                return dblock
+    def next_available_datablock(self, address=0):
+        for addr in range(address, int(self.NUM_DATABLOCKS)):
+            dblock = self.get_datablock(addr)
+            if(not dblock):
+                return addr
 
     def datablocks(self):
-        for addr in range(0, self.NUM_DATABLOCKS):
-            yield self.get_datablock(addr)
+        for addr in range(0, int(self.NUM_DATABLOCKS)):
+            yield self.get_datablock(addr), addr
 
     def node_datablocks(self):
         for dblock in self.datablocks:
@@ -62,8 +66,10 @@ class Datafile:
         if datablock_type == 1:
             return TableDatablock.from_bytes(address) # Create Datablock
         elif datablock_type == 2:
-            return NodeDatablock.from_bytes(address) # TODO: Create NodeDataBlock
+            return NodeDatablock.from_bytes(address)
         elif datablock_type == 3:
-            return LeafDatablock.from_bytes(address) # TODO: Create LeafDataBlock
+            return LeafDatablock.from_bytes(address)
+        elif datablock_type == 4:
+            return ConfigDatablock.from_bytes(address)
         else:
             return Datablock.from_bytes(address)

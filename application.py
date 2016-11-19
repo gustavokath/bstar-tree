@@ -84,12 +84,11 @@ def parse_delete(value, table):
 
 if __name__ == "__main__":
     datafile = Datafile(filename="test")
-    table = Table.init(datafile)
     #datafile.create_new()
+    table = Table.init(datafile)
 
     print('SGBD started')
     finish = False
-    print(table)
     while(not finish):
         cmd = input('$ ')
 

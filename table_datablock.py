@@ -46,8 +46,15 @@ class TableDatablock(Datablock):
                 #Check for space in the end of the records area
                 if(self.records_size() -(self.header[i]+self.header[i+1]) >= space_needed):
                     return self.header[i]+self.header[i+1]
+                else:
+                    return -1
 
             #Check for space between records
+            #print('I')
+            #print(i)
+            #print(len(self.header))
+            #print('space_needed')
+            #print(space_needed)
             space_between = self.header[i+2]-(self.header[i]+self.header[i+1])
             if(space_needed <= space_between):
                 return self.header[i]+self.header[i+1]
@@ -76,7 +83,7 @@ class TableDatablock(Datablock):
         self.records.insert(place, record)
         self._dirty = True
         self.count_record = len(self.records)
-        return True
+        return record
 
     def update_record(self, record, desc):
         tmp_record = copy.copy(record)
@@ -115,6 +122,12 @@ class TableDatablock(Datablock):
                 if(record.description == value):
                     found_records.append(record)
         return found_records
+
+    def get_record_by_pos(self, position):
+        """
+        Get specific record by its position
+        """
+        return self.records[position]
 
     @classmethod
     def from_bytes(cls, address, data=None, count_record=0):
