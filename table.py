@@ -14,8 +14,8 @@ class Table:
     def init(cls, datafile):
         buffer = Buffer.init(datafile)
         try:
-            dblock = buffer.get_datablock(self.BTREE_ROOT_DEFAULT)
-            btree_root = BTree(root=self.BTREE_ROOT_DEFAULT, buffer=self.buffer)
+            config_datablock = buffer.get_datablock(buffer.datafile.NUM_DATABLOCKS-1)
+            btree_root = BTree(root=config_datablock.btree_root, buffer=buffer)
         except:
             btree_root = None
         return cls(buffer=buffer, btree=btree_root)
@@ -25,6 +25,7 @@ class Table:
         Inserts code and desc into table
         """
         if(self.btree is None):
+            new_config = self.buffer.new_datablock(4, self.buffer.datafile.NUM_DATABLOCKS-1)
             self.btree = BTree(root=self.BTREE_ROOT_DEFAULT, buffer=self.buffer)
             self.btree.init()
 
@@ -35,7 +36,8 @@ class Table:
             return None
 
         dblock, position = self.buffer.search_dblock_with_free_space(new_record.size()+4, 1)
-        dblock.write_data(new_record, position)
+        new_record = dblock.write_data(new_record, position)
+        self.btree.insert(new_record.code, new_record.rowid)
         print('Record Inserted')
         pass
 
@@ -44,9 +46,17 @@ class Table:
         Finds record with code
         Uses btree for index
         """
-        #Without btree
-        records = self.buffer.linear_search_record(1, code, 'code', True)
-        print(records)
+        if(self.btree is None):
+            print('[]')
+            return None
+
+        rowid = self.btree.find_key(code)
+        if(rowid is None):
+            print('[]')
+            return None
+
+        dblock = self.buffer.get_datablock(rowid.dblock)
+        print(dblock.get_record_by_pos(rowid.pos))
         pass
 
     def select_desc(self, desc):

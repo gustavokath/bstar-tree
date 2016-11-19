@@ -28,6 +28,18 @@ class Buffer:
         self._write_to_buffer(dblock)
         return dblock
 
+    def get_datablock_in_buffer(self, address):
+        # if it's in cache, return it
+        for i in range(0, self._last):
+            if self._buff[i].address == address:
+                return self._buff[i]
+        return None
+
+    def is_datablock_in_buffer(self, address):
+        if(self.get_datablock_in_buffer(address) is None):
+            return False
+        return True
+
     def get_datablock(self, address):
         # if it's in cache, return it
         for i in range(0, self._last):
@@ -89,6 +101,12 @@ class Buffer:
             space = dblock.free_contiguous_space(free_space)
             return space
         return -1
+
+    def get_next_empty_datablock(self, address=0):
+        empty_addr = self.datafile.next_available_datablock(address)
+        while(self.is_datablock_in_buffer(empty_addr)):
+            empty_addr = self.datafile.next_available_datablock(empty_addr+1)
+        return empty_addr
 
     def _write_to_buffer(self, dblock):
         # find the next empty cell

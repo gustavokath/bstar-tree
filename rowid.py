@@ -1,4 +1,5 @@
 import attr
+import struct
 
 
 @attr.s
