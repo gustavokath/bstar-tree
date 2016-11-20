@@ -112,17 +112,14 @@ if __name__ == "__main__":
             parse_input(cmd, table)
 
 
-    #print(datafile.get_datablock(100))
 
-    #print(struct.calcsize('BHHHHHHHI8sI16sI1996s'))
+
+
     #table_data = struct.pack('BHHHHHHHI8sI16sI1996s',1,2,0,12,12,8,32,9,1,b'Paolinha',2,b'Test',3,b'longe')
     #dblock = TableDatablock.from_bytes(0, table_data, 3)
     #datafile.write_datablock(dblock)
-    #print(datafile.get_datablock(dblock.address))
+
 
     #leaf_data = struct.pack('BHHHHHII%ss' % 2028, 3, 2, 0, 1, 2, 3, 4, 5, b'\x00')
     #leaf_dblock = LeafDatablock.from_bytes(200, leaf_data, 2)
     #datafile.write_datablock(leaf_dblock)
-    #print(datafile.get_datablock(200))
-
-    #print('B*')

@@ -50,18 +50,18 @@ class TableDatablock(Datablock):
                     return -1
 
             #sCheck for space between records
-            #print('I')
-            #print(i)
-            #print(len(self.header))
-            #print('space_needed')
-            #print(space_needed)
-            #print(self.header[i])
-            #print(self.header[i+1])
-            #print(self.header[i+2])
+
+
+
+
+
+
+
+
             space_between = self.header[i+2]-(self.header[i]+self.header[i+1])
             if(self.header[i+1] == 0): #If header wanted is deleted, ignore header space
                 space_between += 4
-            #print(space_between)
+
             if(space_needed <= space_between):
                 return self.header[i]+self.header[i+1]
         return -1

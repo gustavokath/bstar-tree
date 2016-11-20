@@ -15,10 +15,7 @@ class NodeDatablock(Datablock):
         Format: TypeCountHeaderRecords
         """
         free_space = self.free_space()
-        print(self.count_record)
-        print(free_space)
         fmt = 'BH%sI%sH%ss' % (self.count_record, self.count_record+1, free_space)
-        print(struct.calcsize(fmt))
         return struct.pack(fmt, self.type, self.count_record, *self.keys, *self.nexts, b'\x00')
 
     @classmethod
@@ -45,9 +42,6 @@ class NodeDatablock(Datablock):
         return struct.unpack(fmt, data)  # Get binary header data
 
     def find_key(self, key_value):
-        print('WANTED ' + str(key_value))
-        print('FROM ' + str(self.address))
-        print('KEYS ' + str(self.keys))
         for i, key in enumerate(self.keys):
             if(key > key_value):
                 return self.nexts[i]
@@ -58,8 +52,6 @@ class NodeDatablock(Datablock):
         return None
 
     def update_data(self, keys=[], nexts=[]):
-        print('keys')
-        print(keys)
         self.keys = keys
         self.nexts = nexts
         self.count_record = len(keys)
