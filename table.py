@@ -14,9 +14,9 @@ class Table:
     def init(cls, datafile):
         buffer = Buffer.init(datafile)
         try:
-            config_datablock = buffer.get_datablock(buffer.datafile.NUM_DATABLOCKS-1)
+            config_datablock = buffer.get_datablock(int(buffer.datafile.NUM_DATABLOCKS)-1)
             btree_root = BTree(root=config_datablock.btree_root, buffer=buffer)
-        except:
+        except(EnvironmentError):
             btree_root = None
         return cls(buffer=buffer, btree=btree_root)
 
@@ -73,13 +73,17 @@ class Table:
         Updates record code with new description desc
         Finds record through select_code()
         """
-        #Without btree
-        records = self.buffer.linear_search_record(1, code, 'code', True)
-        if(records is None):
+        if(self.btree is None):
+            print('[]')
+            return None
+
+        rowid = self.btree.find_key(code)
+        if(rowid is None):
             print('Record not found')
             return None
-        record = records[0]
-        dblock = self.buffer.get_datablock(record.rowid.dblock)
+
+        dblock = self.buffer.get_datablock(rowid.dblock)
+        record = dblock.get_record_by_pos(rowid.pos)
         result = dblock.update_record(record, desc)
         if(result):
             print('Record Updated')
@@ -89,7 +93,8 @@ class Table:
         update_record.description = desc
         update_record.rowid = None
         dblock, position = self.buffer.search_dblock_with_free_space(update_record.size()+4, 1)
-        dblock.write_data(update_record, position)
+        record = dblock.write_data(update_record, position)
+        self.btree.update(record.code, record.rowid)
         print('Record Updated')
         pass
 

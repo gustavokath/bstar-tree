@@ -12,6 +12,20 @@ class BTree:
     def init(self):
         return self.buffer.new_datablock(3, self.root)
 
+    def pretty_print(self, curr_dblock=None):
+        if(curr_dblock is None):
+            curr_dblock = self.buffer.get_datablock(self.root)
+
+
+        if(isinstance(curr_dblock, NodeDatablock)):
+            print(curr_dblock)
+            for next_addr in curr_dblock.nexts:
+                next_dblock = self.buffer.get_datablock(next_addr)
+                self.pretty_print(next_dblock)
+
+        if(isinstance(curr_dblock, LeafDatablock)):
+            print(curr_dblock)
+
     def has_key(self, key_value):
         result = self.find_key(key_value)
         if(result is None):
@@ -43,13 +57,13 @@ class BTree:
                 return None
 
             if(curr_dblock.can_insert()):
-                curr_dblock.insert(key_value, result[0].address, result[1].address)
+                curr_dblock.insert(result[1].keys[0], result[0].address, result[1].address)
                 #print('Inserted item in node')
                 #print(curr_dblock)
                 return None
 
             #print('Spliting node')
-            splited_data = curr_dblock.insert_and_split(key_value, result[0].address, result[1].address)
+            splited_data = curr_dblock.insert_and_split(result[1].keys[0], result[0].address, result[1].address)
             splited_dblocks = self.split_during_insert(splited_data ,curr_dblock, 2)
             if(curr_dblock.address == self.root):
                 self.new_root(splited_dblocks[0], splited_dblocks[1])
@@ -73,11 +87,22 @@ class BTree:
 
     def split_during_insert(self, splited_data, src_dblock, datablock_type):
         next_free_addr = self.buffer.get_next_empty_datablock()
-        src_dblock.update_data(splited_data[0], splited_data[1])
-
         new_leaf = self.buffer.new_datablock(datablock_type, next_free_addr)
         new_leaf.update_data(splited_data[2], splited_data[3])
+
+        src_dblock.update_data(splited_data[0], splited_data[1])
         return src_dblock, new_leaf
+
+    def update(self, key_value, rowid):
+        next_addr = self.root
+        while(next_addr is not None):
+            next_dblock = self.buffer.get_datablock(next_addr)
+            if(isinstance(next_dblock, LeafDatablock)):
+                next_dblock.update_rowid(key_value, rowid)
+                return
+            next_addr = next_dblock.find_key(key_value)
+        return None
+
 
     def new_root(self, left_dblock, right_dblock):
         next_free_addr = self.buffer.get_next_empty_datablock()

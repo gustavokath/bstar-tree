@@ -49,7 +49,7 @@ class Buffer:
         # if not, try to write it to the cache
         dblock = self.datafile.get_datablock(address)
         if(not dblock):
-            raise Exception('Invalid datablock')
+            raise EnvironmentError('Invalid datablock')
         self._write_to_buffer(dblock)
         return dblock
 

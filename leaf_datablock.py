@@ -98,11 +98,18 @@ class LeafDatablock(Datablock):
             return False
         length = int(len(self.keys)/2)
 
-        left_keys = self.keys[:length]
-        left_rowids = self.rowids[:length]
-        right_keys = self.keys[length+1:]
-        right_rowids = self.rowids[length+1:]
+        left_keys = self.keys[:length-1]
+        left_rowids = self.rowids[:length-1]
+        right_keys = self.keys[length:]
+        right_rowids = self.rowids[length:]
         return left_keys, left_rowids, right_keys, right_rowids
+
+    def update_rowid(self, key_value, rowid):
+        for i, key in enumerate(self.keys):
+            if(key == key_value):
+                self.rowids[i] = rowid
+                return True
+        return False
 
     def update_data(self, keys=[], rowids=[]):
         self.keys = keys
