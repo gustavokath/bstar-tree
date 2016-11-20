@@ -103,6 +103,15 @@ class BTree:
             next_addr = next_dblock.find_key(key_value)
         return None
 
+    def delete(self, key_value):
+        next_addr = self.root
+        while(next_addr is not None):
+            next_dblock = self.buffer.get_datablock(next_addr)
+            if(isinstance(next_dblock, LeafDatablock)):
+                next_dblock.delete(key_value)
+                return
+            next_addr = next_dblock.find_key(key_value)
+
 
     def new_root(self, left_dblock, right_dblock):
         next_free_addr = self.buffer.get_next_empty_datablock()

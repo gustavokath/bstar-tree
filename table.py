@@ -103,13 +103,19 @@ class Table:
         Deletes record by code
         Finds record through select_code()
         """
-        records = self.buffer.linear_search_record(1, code, 'code', True)
-        if(records is None):
+        if(self.btree is None):
+            print('[]')
+            return None
+
+        rowid = self.btree.find_key(code)
+        if(rowid is None):
             print('Record not found')
             return None
-        record = records[0]
-        dblock = self.buffer.get_datablock(record.rowid.dblock)
+
+        dblock = self.buffer.get_datablock(rowid.dblock)
+        record = dblock.get_record_by_pos(rowid.pos)
         dblock.delete_record(record)
+        self.btree.delete(code)
         print('Record Removed')
         pass
 
