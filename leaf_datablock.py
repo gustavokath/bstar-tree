@@ -111,6 +111,15 @@ class LeafDatablock(Datablock):
                 return True
         return False
 
+    def delete(self, key_value):
+        for i, key in enumerate(self.keys):
+            if(key == key_value):
+                self.rowids.pop(i)
+                self.keys.pop(i)
+                self.count_record = len(self.keys)
+                return True
+        return False
+
     def update_data(self, keys=[], rowids=[]):
         self.keys = keys
         self.rowids = rowids

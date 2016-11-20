@@ -49,13 +49,19 @@ class TableDatablock(Datablock):
                 else:
                     return -1
 
-            #Check for space between records
+            #sCheck for space between records
             #print('I')
             #print(i)
             #print(len(self.header))
             #print('space_needed')
             #print(space_needed)
+            #print(self.header[i])
+            #print(self.header[i+1])
+            #print(self.header[i+2])
             space_between = self.header[i+2]-(self.header[i]+self.header[i+1])
+            if(self.header[i+1] == 0): #If header wanted is deleted, ignore header space
+                space_between += 4
+            #print(space_between)
             if(space_needed <= space_between):
                 return self.header[i]+self.header[i+1]
         return -1
@@ -69,21 +75,20 @@ class TableDatablock(Datablock):
         # Insert Header in the right position
         place = -1
         for i  in range(0, len(self.header), 2):
-            if(self.header[i] > position):
+            if(self.header[i] == position and self.header[i+1] == 0): # Going to use header that was delated
+                place = i
+                self.header[i+1] = record.size()
+                return self._insert_new_record(record, place, True)
+            elif(self.header[i] > position):
                 place = i
                 self.header.insert(i, position)
                 self.header.insert(i+1, record.size())
+                return self._insert_new_record(record, place)
         if(place == -1):
             place = len(self.header)
             self.header.append(position)
             self.header.append(record.size())
-
-        if(record.rowid is None):
-            record.rowid = Rowid(dblock=self.address, pos=int(math.ceil(place/2.0)))
-        self.records.insert(place, record)
-        self._dirty = True
-        self.count_record = len(self.records)
-        return record
+            return self._insert_new_record(record, place)
 
     def update_record(self, record, desc):
         tmp_record = copy.copy(record)
@@ -106,9 +111,8 @@ class TableDatablock(Datablock):
 
     def delete_record(self, record):
         pos = record.rowid.pos
-        self.header.pop(pos*2)
-        self.header.pop(pos*2)
-        self.records.pop(pos)
+        self.header[pos*2+1] = 0 #set record removed size to 0 to mark it was removed
+        self.records[pos].deleted = True
         self._dirty = True
         return True
 
@@ -116,10 +120,10 @@ class TableDatablock(Datablock):
         found_records = []
         for record in self.records:
             if(field == 'code'):
-                if(record.code == value):
+                if(record.code == value and not record.deleted):
                     return [record]
             elif(field == 'description'):
-                if(record.description == value):
+                if(record.description == value and not record.deleted):
                     found_records.append(record)
         return found_records
 
@@ -169,8 +173,23 @@ class TableDatablock(Datablock):
 
         records = []
         for i in range(0, len(header), 2):
-            info = struct.unpack_from('I%ss' % (header[i+1]-4), record_str, header[i])
-            rowid = Rowid(dblock=address, pos=int(math.ceil(i/2.0)))
-            desc = re.sub(r'[^\w]', '', info[1].decode())
-            records.append(Record(code=info[0], description=desc, rowid=rowid))
+            if(header[i+1] != 0):
+                info = struct.unpack_from('I%ss' % (header[i+1]-4), record_str, header[i])
+                rowid = Rowid(dblock=address, pos=int(math.ceil(i/2.0)))
+                desc = re.sub(r'[^\w]', '', info[1].decode())
+                records.append(Record(code=info[0], description=desc, rowid=rowid))
+            else:
+                rowid = Rowid(dblock=address, pos=int(math.ceil(i/2.0)))
+                records.append(Record(code=0, description='', rowid=rowid, deleted=True))
         return records
+
+    def _insert_new_record(self, record, place, reuse=False):
+        if(record.rowid is None):
+            record.rowid = Rowid(dblock=self.address, pos=int(math.ceil(place/2.0)))
+        if(reuse):
+            self.records[place] = record
+        else:
+            self.records.insert(place, record)
+        self._dirty = True
+        self.count_record = len(self.records)
+        return record
