@@ -11,7 +11,6 @@ from rowid import Rowid
 @attr.s
 class ConfigDatablock(Datablock):
     btree_root = attr.ib(default=16300)
-    records = attr.ib(default=[])
 
     def get_data(self):
         """
@@ -41,13 +40,13 @@ class ConfigDatablock(Datablock):
 
         raw_info = ConfigDatablock.unpack(count_record, data)
 
-        return cls(address=address, count_record=count_record, type=1, btree_root=btree_root)
+        return cls(address=address, count_record=count_record, type=4, btree_root=raw_info[2])
 
     @staticmethod
     def unpack(count_record, data):
-        records_size = TableDatablock.DATABLOCK_SIZE -  8 # Calculate the remaining space in the record data area
+        records_size = ConfigDatablock.DATABLOCK_SIZE -  8 # Calculate the remaining space in the record data area
 
-        fmt_header = 'BHI'
+        fmt_header = 'BHI%sx' % records_size
 
         info = struct.unpack(fmt_header, data)  # Get binary header data
         return info

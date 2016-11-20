@@ -12,7 +12,8 @@ import uuid
 
 def parse_input(cmd, table):
     cmd = cmd.split('(')
-    cmd[1] = cmd[1][:-1]
+    if(len(cmd) > 1):
+        cmd[1] = cmd[1][:-1]
     if(cmd[0] == 'insert'):
         return parse_insert(cmd[1], table)
     elif(cmd[0] == 'select'):
@@ -21,6 +22,8 @@ def parse_input(cmd, table):
         return parse_update(cmd[1], table)
     elif(cmd[0] == 'delete'):
         return parse_delete(cmd[1], table)
+    elif(cmd[0] == 'btree'):
+        return parse_btree(table)
 
 def parse_insert(values, table):
     values = values.split(',')
@@ -30,6 +33,7 @@ def parse_insert(values, table):
             for i in range(0, count):
                 code = random.randint(0, 4294967295)
                 desc = str(uuid.uuid1())
+                desc = desc.replace('-','')
                 table.insert(code, desc)
             return True
         except ValueError:
@@ -81,6 +85,14 @@ def parse_delete(value, table):
     except ValueError:
         print('Error: Expected code \"%s\" to be an integer' % values[0])
         return False
+
+def parse_btree(table):
+    if(table.btree is None):
+        print('BTree not created yet')
+        return None
+
+    table.btree.pretty_print()
+
 
 if __name__ == "__main__":
     datafile = Datafile(filename="test")

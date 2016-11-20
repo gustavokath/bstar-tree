@@ -88,7 +88,7 @@ class NodeDatablock(Datablock):
                 return False
             if(key > key_value):
                 self.keys.insert(i, key_value)
-                self.nexts.insert(i, left_addr)
+                self.nexts.insert(i+1, right_addr)
                 self.count_record = len(self.keys)
                 self._dirty = True
                 return True
@@ -108,8 +108,8 @@ class NodeDatablock(Datablock):
             return False
         length_keys = int(len(self.keys)/2)
 
-        left_keys = self.keys[:length_keys]
-        left_nexts = self.nexts[:length_keys+1]
-        right_keys = self.keys[length_keys+1:]
-        right_nexts = self.rowids[length_keys+1:]
+        left_keys = self.keys[:length_keys-1]
+        left_nexts = self.nexts[:length_keys]
+        right_keys = self.keys[length_keys:]
+        right_nexts = self.rowids[length_keys:]
         return left_keys, left_nexts, right_keys, right_nexts
