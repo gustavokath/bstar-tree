@@ -42,14 +42,14 @@ class BTree:
         return None
 
     def insert(self, key_value, rowid, curr_dblock=None):
-        #print('ROOT')
-        #print(self.root)
+
+        
         if(curr_dblock is None):
-            #print('Curr DBLOCK is none')
+
             curr_dblock = self.buffer.get_datablock(self.root)
 
         if(isinstance(curr_dblock, NodeDatablock)):
-            #print('Curr DBLOCK is Node')
+
             next_addr = curr_dblock.find_key(key_value)
             next_dblock = self.buffer.get_datablock(next_addr)
             result = self.insert(key_value, rowid, next_dblock)
@@ -58,11 +58,11 @@ class BTree:
 
             if(curr_dblock.can_insert()):
                 curr_dblock.insert(result[1].keys[0], result[0].address, result[1].address)
-                #print('Inserted item in node')
-                #print(curr_dblock)
+
+
                 return None
 
-            #print('Spliting node')
+
             splited_data = curr_dblock.insert_and_split(result[1].keys[0], result[0].address, result[1].address)
             splited_dblocks = self.split_during_insert(splited_data ,curr_dblock, 2)
             if(curr_dblock.address == self.root):
@@ -72,11 +72,11 @@ class BTree:
         #IF current datablock is LeafDatablock
         if(curr_dblock.can_insert()):
             curr_dblock.insert(key_value, rowid)
-            #print('Inserted item in leaf')
-            #print(curr_dblock)
+
+
             return None
 
-        #print('Spliting leaf')
+
         splited_data = curr_dblock.insert_and_split(key_value, rowid)
         splited_dblocks = self.split_during_insert(splited_data ,curr_dblock, 3)
         if(curr_dblock.address == self.root):
@@ -117,8 +117,8 @@ class BTree:
         next_free_addr = self.buffer.get_next_empty_datablock()
         new_root = self.buffer.new_datablock(2, next_free_addr)
         new_root.update_data([right_dblock.keys[0]], [left_dblock.address, right_dblock.address])
-        #print('NEW ROOT TO BTREE')
-        #print(new_root)
+
+
         config_dblock = self.buffer.get_datablock(self.buffer.datafile.NUM_DATABLOCKS-1)
         config_dblock.update_btree_root(new_root.address)
         self.root = new_root.address

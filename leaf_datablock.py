@@ -48,9 +48,9 @@ class LeafDatablock(Datablock):
         return  struct.unpack(fmt, data)  # Get binary header data
 
     def find_key(self, key_value):
-        #print('WANTED ' + str(key_value))
-        #print('FROM ' + str(self.address))
-        #print('KEYS ' + str(self.keys))
+
+
+
         for i, key in enumerate(self.keys):
             if(key == key_value):
                 return self.rowids[i]
