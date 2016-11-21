@@ -12,17 +12,17 @@ import uuid
 
 def parse_input(cmd, table):
     cmd = cmd.split('(')
-    if(len(cmd) > 1):
+    if len(cmd) > 1:
         cmd[1] = cmd[1][:-1]
-    if(cmd[0] == 'insert'):
+    if cmd[0] == 'insert':
         return parse_insert(cmd[1], table)
-    elif(cmd[0] == 'select'):
+    elif cmd[0] == 'select':
         return parse_select(cmd[1], table)
-    elif(cmd[0] == 'update'):
+    elif cmd[0] == 'update':
         return parse_update(cmd[1], table)
-    elif(cmd[0] == 'delete'):
+    elif cmd[0] == 'delete':
         return parse_delete(cmd[1], table)
-    elif(cmd[0] == 'btree'):
+    elif cmd[0] == 'btree':
         return parse_btree(table)
     elif cmd[0] == 'wipe':
         return parse_wipe(table)
@@ -39,10 +39,10 @@ def parse_wipe(table):
 
 def parse_insert(values, table):
     values = values.split(',')
-    if(len(values) == 1):
+    if len(values) == 1 :
         try:
             count = int(values[0])
-            for i in range(0, count):
+            for _ in range(0, count):
                 code = random.randint(0, 4294967295)
                 desc = str(uuid.uuid1())
                 desc = desc.replace('-','')
@@ -76,7 +76,7 @@ def parse_select(values, table):
 
 def parse_update(values, table):
     values = values.split(',')
-    if(len(values) != 2):
+    if len(values) != 2:
         print('Expected 2 parameters, %s received' % len(values))
         return False
 
@@ -99,7 +99,7 @@ def parse_delete(value, table):
         return False
 
 def parse_btree(table):
-    if(table.btree is None):
+    if table.btree is None:
         print('BTree not created yet')
         return None
 
@@ -113,10 +113,10 @@ if __name__ == "__main__":
 
     print('SGBD started')
     finish = False
-    while(not finish):
+    while not finish:
         cmd = input('$ ')
 
-        if(cmd == 'exit'):
+        if cmd == 'exit':
             finish = True
             print('Closing SGBD...')
             table.exit()
