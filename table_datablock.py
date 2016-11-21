@@ -41,29 +41,23 @@ class TableDatablock(Datablock):
         if(len(self.header) == 0):
             return 0
 
+        last_offset = 0
         for i in range(0, len(self.header), 2):
-            if(i+2 >= len(self.header)):
-                #Check for space in the end of the records area
-                if(self.records_size() -(self.header[i]+self.header[i+1]) >= space_needed):
+            if self.header[last_offset] < self.header[i]:
+                last_offset = i
+
+            #Check for space between records
+            if(i+2 < len(self.header)):
+                space_between = self.header[i+2]-(self.header[i]+self.header[i+1])
+                if(self.header[i+1] == 0): #If header wanted is deleted, ignore header space
+                    space_between += 4
+
+                if(space_needed <= space_between):
                     return self.header[i]+self.header[i+1]
-                else:
-                    return -1
 
-            #sCheck for space between records
-
-
-
-
-
-
-
-
-            space_between = self.header[i+2]-(self.header[i]+self.header[i+1])
-            if(self.header[i+1] == 0): #If header wanted is deleted, ignore header space
-                space_between += 4
-
-            if(space_needed <= space_between):
-                return self.header[i]+self.header[i+1]
+        #Check for space in the end
+        if(self.records_size() -(self.header[last_offset]+self.header[last_offset+1]) >= space_needed):
+            return self.header[last_offset]+self.header[last_offset+1]
         return -1
 
     def write_data(self, record, position=None):

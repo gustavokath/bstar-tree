@@ -34,6 +34,7 @@ def parse_wipe(table):
     datafile = Datafile(filename="test")
     print("Creating new datafile (and overwriting any existing files!)")
     datafile.create_new()
+    table.refresh(datafile)
     print("Datafile created")
     return True
 

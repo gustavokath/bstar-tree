@@ -20,6 +20,16 @@ class Table:
             btree_root = None
         return cls(buffer=buffer, btree=btree_root)
 
+    def refresh(self, datafile):
+        buffer = Buffer.init(datafile)
+        try:
+            config_datablock = buffer.get_datablock(int(buffer.datafile.NUM_DATABLOCKS)-1)
+            btree_root = BTree(root=config_datablock.btree_root, buffer=buffer)
+        except(EnvironmentError):
+            btree_root = None
+        self.buffer = buffer
+        self.btree = btree_root
+
     def insert(self, code, desc):
         """
         Inserts code and desc into table
@@ -92,6 +102,7 @@ class Table:
         update_record = record
         update_record.description = desc
         update_record.rowid = None
+        update_record.deleted = False
         dblock, position = self.buffer.search_dblock_with_free_space(update_record.size()+4, 1)
         record = dblock.write_data(update_record, position)
         self.btree.update(record.code, record.rowid)
