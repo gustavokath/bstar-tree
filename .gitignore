@@ -93,3 +93,14 @@ ENV/
 
 # test data
 data/*
+
+pdf/*.aux
+pdf/*.dvi
+pdf/*.idx
+pdf/*.ilg
+pdf/*.log
+pdf/*.ind
+pdf/*.out
+pdf/*.ps
+pdf/*.tex
+pdf/*.toc

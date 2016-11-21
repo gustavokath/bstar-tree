@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>Python</ID>
+  <OriginalElement>#/Users/pedrovanzella/Code/PUCRS/IBD/bstar-tree/application.py</OriginalElement>
+  <nodes>
+    <node x="301.0" y="344.0">leaf_datablock.LeafDatablock</node>
+    <node x="664.0" y="1220.0">rowid.Rowid</node>
+    <node x="382.0" y="1220.0">record.Record</node>
+    <node x="0.0" y="443.0">config_datablock.ConfigDatablock</node>
+    <node x="0.0" y="793.0">buffer.Buffer</node>
+    <node x="503.0" y="793.0">btree.BTree</node>
+    <node x="1223.0" y="344.0">table_datablock.TableDatablock</node>
+    <node x="782.0" y="366.0">node_datablock.NodeDatablock</node>
+    <node x="876.0" y="793.0">table.Table</node>
+    <node x="0.0" y="1220.0">datafile.Datafile</node>
+    <node x="581.5" y="0.0">datablock.Datablock</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="config_datablock.ConfigDatablock" target="datablock.Datablock">
+      <point x="0.0" y="-103.0" />
+      <point x="140.5" y="314.0" />
+      <point x="626.625" y="314.0" />
+      <point x="-135.375" y="147.0" />
+    </edge>
+    <edge source="table_datablock.TableDatablock" target="datablock.Datablock">
+      <point x="0.0" y="-202.0" />
+      <point x="1453.5" y="314.0" />
+      <point x="897.375" y="314.0" />
+      <point x="135.375" y="147.0" />
+    </edge>
+    <edge source="leaf_datablock.LeafDatablock" target="datablock.Datablock">
+      <point x="0.0" y="-202.0" />
+      <point x="531.5" y="324.0" />
+      <point x="716.875" y="324.0" />
+      <point x="-45.125" y="147.0" />
+    </edge>
+    <edge source="node_datablock.NodeDatablock" target="datablock.Datablock">
+      <point x="0.0" y="-180.0" />
+      <point x="992.5" y="324.0" />
+      <point x="807.125" y="324.0" />
+      <point x="45.125" y="147.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="525.0" y="204.0" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Methods</Category>
+    <Category>Inner Classes</Category>
+    <Category>Fields</Category>
+  </Categories>
+</Diagram>
+
