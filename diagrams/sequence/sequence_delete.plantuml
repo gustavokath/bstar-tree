@@ -1,0 +1,23 @@
+@startuml
+autonumber
+actor User
+
+User -> Application : update(key, value)
+Application -> Application : Parses input command
+Application -> Table : update(key, value)
+Table -> BTree : Finds code in BTree
+BTree -> LeafDatablock : Gets RowId
+LeafDatablock --> BTree
+BTree --> Table : Record RowId
+Table -> Buffer : Get data block
+Buffer -> Datafile : Get data block
+database Disk
+Datafile -> Disk : Get data block from disk
+Disk --> Datafile
+Datafile --> Buffer
+Buffer --> Table
+Table -> TableDatablock : Update Record
+TableDatablock --> Table
+Table --> Application
+Application --> User : Result
+@enduml

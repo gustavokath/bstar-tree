@@ -1,0 +1,32 @@
+@startuml
+autonumber
+actor User
+
+
+User -> Application : insert(value)
+Application -> Application : Parses input command
+Application -> Table : insert(code, description)
+Table -> Record : Creates new record in memory
+Record --> Table
+Table -> BTree : Verifies if new record code exists in btree
+BTree --> Table
+Table -> Buffer : Searches data block containing enough space
+loop until enough space
+  Buffer -> Datafile : Load a data block
+  database Disk
+  Datafile -> Disk : Get data block from disk
+  Disk --> Datafile
+  Datafile --> Buffer : Data block
+end
+Buffer --> Table : data block where new data will be stored
+Table -> TableDatablock : write new record
+TableDatablock -> TableDatablock : Creates/Updates headers
+TableDatablock -> TableDatablock : Sets as dirty
+TableDatablock --> Table
+Table -> BTree : Inserts new key
+BTree -> BTree : Inserts and balance if needed
+BTree --> Table
+Table --> Application
+Application --> User : Result
+
+@enduml
