@@ -24,6 +24,18 @@ def parse_input(cmd, table):
         return parse_delete(cmd[1], table)
     elif(cmd[0] == 'btree'):
         return parse_btree(table)
+    elif cmd[0] == 'wipe':
+        return parse_wipe(table)
+
+def parse_wipe(table):
+    """
+    Wipes the table
+    """
+    datafile = Datafile(filename="test")
+    print("Creating new datafile (and overwriting any existing files!)")
+    datafile.create_new()
+    print("Datafile created")
+    return True
 
 def parse_insert(values, table):
     values = values.split(',')
